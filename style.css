@@ -210,7 +210,7 @@ footer {
 }
 
 #girl-img {
-    position: absolute;
+    position: fixed;
     vertical-align: bottom;
     width: 35%;
 }
