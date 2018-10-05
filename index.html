@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>80s Movie Trivia</title>
+
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <link rel="stylesheet" type="text/css" href="./reset.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Monoton|Muli|Russo+One" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <header>
+        <div id="clearfix">
+            <h1>
+                <img id="eighty" src="./images/eighty.png" alt="eighty" />
+                <div id="title">Movie &nbsp; Trivia</div>
+            </h1>
+        </div>
+    </header>
+
+
+    <section class="content" id="clearfix">
+
+        <section class="questions">
+            <div id="instr">
+                instruction
+                <p>Pick 5 games. You only have 20 guesses for each game.</p>
+            </div>
+        </section>
+
+        <section class="games">
+            <div id="guess">Guess Words: &nbsp <span id="guess-phrase"> </span></div>
+            <div id="picked">These letters have been picked: &nbsp <span id="picked-words"></span></div>
+            <div id="remaining"> Remaining guesses: &nbsp <span id="user-tries"> </span></div>
+        </section>
+
+        <section class="scores" id="clearfix">
+            <div id="scoreall">Score: &nbsp <span id="score"></span></div>
+            <button id="next-game" onclick="reset()">next game</button>
+            <div id="girl-img" class="hidden"><img src="./images/girl-2.png" /></div>
+            <audio id="rock">
+                <source src="./media/rock.mp3" type="audio/mp3"></audio>
+        </section>
+
+    </section>
+
+
+    <footer>
+
+    </footer>
+
+</body>
+
+
+
+<script>
+
+    var answerPhrases = ["COCKTAIL", "TOP GUN", "RAIN MAN", "RISKY BUSINESS", "LEGEND", "DAYS OF THUNDER", "ALL THE RIGHT MOVES", "TAPS", "THE OUTSIDERS", "THE COLOR OF MONEY"];
+    var guessPhrase = "";
+    var previousPhrase = "";
+    var pickedWords = "";
+    var userTries = 20;
+    var userScore = 0;
+    var answerPhrase;
+    var nextGame;
+    var i = 0;
+    var girlImg;
+
+
+    //When lose or cick the next game, reset a new game.
+    reset();
+
+    function reset() {
+
+        //The computer random picks a phrase. If the phrase is the same as the previous one, do again.
+        do {
+            answerPhrase = answerPhrases[Math.floor(Math.random() * answerPhrases.length)];
+        }
+        while (answerPhrase == previousPhrase);
+
+        previousPhrase = answerPhrase;
+
+
+        //Guess the phrase.
+        guessPhrase = "";
+
+        for (i = 0; i < answerPhrase.length; i++) {
+
+            //Build the guess field based on the selected phrase.
+            if (answerPhrase.charAt(i) != " ") {
+                guessPhrase = guessPhrase + "_";
+            }
+            else {
+                guessPhrase = guessPhrase + " ";
+            }
+        }
+
+        //Output the guessed phrase.
+        document.getElementById("guess-phrase").innerHTML = guessPhrase;
+
+        //There will be 17 times to guess the phrase.
+        userTries = 20;
+        document.getElementById("user-tries").innerHTML = userTries;
+
+        //Output the picked words.
+        pickedWords = "";
+        document.getElementById("picked-words").textContent = pickedWords;
+
+    }
+
+
+    document.onkeyup = function (event) {
+        i
+
+        //Alert alpha only.
+        if (!alphaOnly(event)) {
+            alert("Please only enter letters.");
+            return;
+        }
+
+        //Make sure the user guess is upper case.
+        var guessLetter = event.key.toUpperCase();
+
+        //ourput the letter. if found the match letter, output. add the score also.
+        var foundMatch = false;
+
+        for (i = 0; i < answerPhrase.length; i++) {
+            if (answerPhrase.charAt(i) === guessLetter) {
+                guessPhrase = guessPhrase.substring(0, i) + guessLetter + guessPhrase.substring(i + 1);
+                foundMatch = true;
+                document.getElementById("guess-phrase").textContent = guessPhrase;
+                userScore++;
+                document.getElementById("score").textContent = userScore;
+            }
+        }
+
+        //Guessed letters found not belong to the guessPhrase, send them to the pickedWords and output.
+        if (foundMatch === false && pickedWords.search(guessLetter) == -1) {
+            pickedWords = pickedWords + guessLetter + "  ";
+            document.getElementById("picked-words").textContent = pickedWords;
+        }
+
+        // reset.
+        if (guessPhrase === answerPhrase) {
+            setTimeout(function () { reset(); }, 800);
+        }
+
+        if (userScore % 10 == 0) {
+            unhideImage();
+            setTimeout(function () { hideImage(); }, 1500);
+        }
+
+        //lose.    
+        userTries--;
+        document.getElementById("user-tries").textContent = userTries;
+
+        if (userTries === 0) {
+            alert("You lose. Try Again!");
+            reset();
+        }
+
+        //show or hid the image and audio.
+        function unhideImage() {
+            var girlImg = document.getElementById("girl-img");
+            girlImg.className = "unhidden";
+            playAudio("rock.mp3");
+        }
+
+        function hideImage() {
+            var girlImg = document.getElementById("girl-img");
+            girlImg.className = "hidden";
+        }
+
+        function playAudio() {
+            var youRock = document.getElementById("rock");
+            youRock.play();
+        }
+
+        //allow only alphabets.
+        function alphaOnly(event) {
+            var keyCode = event.keyCode;
+            if (keyCode >= 65 && keyCode <= 90) {
+                return true;
+            }
+        }
+
+    }
+
+</script>
+
+
+</html>
